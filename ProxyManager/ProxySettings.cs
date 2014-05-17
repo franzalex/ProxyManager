@@ -154,12 +154,15 @@ namespace ProxyManager
         /// </returns>
         public override bool Equals(object obj)
         {
+            // ensure the objects to be compared are not null and are also of type ProxySettings
+            if (this == null || obj == null || obj.GetType() != typeof(ProxySettings)) return false;
+
             return obj.GetType() == typeof(ProxySettings) &&
-                   ((ProxySettings)obj).With(p => p._http.Equals(_http) &&
-                                                       p._https.Equals(_https) &&
-                                                       p._ftp.Equals(_ftp) &&
-                                                       p._socks.Equals(_socks) &&
-                                                       p.ProxyOverrides == ProxyOverrides);
+                   ((ProxySettings)obj).With(p => p._http.NullCheckEquality(_http) &&
+                                                  p._https.NullCheckEquality(_https) &&
+                                                  p._ftp.NullCheckEquality(_ftp) &&
+                                                  p._socks.NullCheckEquality(_socks) &&
+                                                  p.ProxyOverrides == ProxyOverrides);
         }
 
         /// <summary>Returns a hash code for this instance.</summary>

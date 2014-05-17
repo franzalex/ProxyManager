@@ -109,5 +109,26 @@ namespace ProxyManager
         {
             m.Invoke(o);
         }
+
+        /// <summary>Checks if two objects are not null and are equal.</summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="o1">The first object to be compared.</param>
+        /// <param name="o2">The second object to be compared.</param>
+        /// <returns>
+        ///   <c>true</c> if both objects are not null and are equal; otherwise <c>false</c>.
+        /// </returns>
+        /// <remarks>
+        /// This function first checks that both objects being compared are not null before calling 
+        /// the object's Equal method. 
+        /// This extension method enables cleaner code where all null-checks in equality comparisons
+        /// are shuttled away here.
+        /// </remarks>
+        public static bool NullCheckEquality<T>(this T o1, T o2)
+        {
+            if (o1 == null || o2 == null)
+                return false;
+            else
+                return o1.Equals(o2);
+        }
     }
 }

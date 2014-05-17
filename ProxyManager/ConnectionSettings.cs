@@ -210,7 +210,7 @@ namespace ProxyManager
             if (obj.GetType() != typeof(ConnectionSettings)) return false;
 
             var o = (ConnectionSettings)obj;
-            var result = o != null;
+            var result = o != null && this != null;
 
             result &= o.ConnectionType == ConnectionType;
             result &= o.ConnectionType == ProxyManager.ConnectionType.AutoConfigUrl ?
