@@ -216,7 +216,7 @@ namespace ProxyManager
             result &= o.ConnectionType == ProxyManager.ConnectionType.AutoConfigUrl ?
                       o.AutoConfigUrl.Equals(AutoConfigUrl, StringComparison.OrdinalIgnoreCase) : true;
             result &= o.ConnectionType == ProxyManager.ConnectionType.ManualProxy ?
-                      o.ManualProxy.Equals(ManualProxy) : true;
+                      o.ManualProxy.NullCheckEquality(ManualProxy) : true;
 
             return result;
         }
