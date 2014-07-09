@@ -269,6 +269,9 @@ namespace ProxyManager
         {
             if (!CurrentConnectionIsKnown)
             {
+                // prevent showing the dialog box twice
+                if (dlgProxySettings.Instance.Visible) return;
+
                 dlgProxySettings.Instance.ConnectionSettings = CurrentConnectionSetting;
                 if (dlgProxySettings.Instance.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
