@@ -22,6 +22,7 @@ namespace ProxyManager
         private static Process _parentProc;
         private static RegistryUtils.RegistryMonitor _regWatcher;
         private static string[] _appArgs;
+        private static bool debuggerAttached;
 
 
         /// <summary>Gets the application data path.</summary>
@@ -247,15 +248,18 @@ namespace ProxyManager
 
             var procs = Process.GetProcessesByName(appExeFile);
             var thisProc = Process.GetCurrentProcess();
+            debuggerAttached = System.Diagnostics.Debugger.IsAttached;
 
             /*
              * Conditions for starting this instance:
              *  1. This is the only process
              *  2. More than one process and one of the existing processes is this one's parent
+             *  3. A debugger is attached to this process
              */
             return (procs.Length == 1 && procs[0].Id == thisProc.Id) ||     // condition 1
                    (procs.Length > 1 && _parentProc != null &&
-                   procs.Select(p => p.Id).Contains(_parentProc.Id));       // condition 2
+                   procs.Select(p => p.Id).Contains(_parentProc.Id)) ||     // condition 2
+                   debuggerAttached;                                        // condition 3  
         }
 
         /// <summary>Gets the a path where the application data can be written to.</summary>
@@ -320,10 +324,17 @@ namespace ProxyManager
                 SetAutoStart();
 
 
-            // start child process
-            if (!IsChildProcess || (ParentProcess != null && ParentProcess.HasExited))
+            /*  Start child process in the following conditions
+             *    1. This is not a child process
+             *    2. There is no debugger attached
+             *    3. The singleprocess argument was not passed
+             *    4. Parent process exited before this one is completely initialized
+             */
+            if (!(IsChildProcess || debuggerAttached ||
+                  Program.Arguments.Contains(ValidArgs.RunInSelf)) ||
+                (ParentProcess != null && ParentProcess.HasExited))
             {
-                // recursively start new child processes if exit code is not 0
+                // recursively start new child processes if exit code is not 0 (successful exit)
                 do
                 {
                     var childProcArgs = ValidArgs.ParentProcId + thisProc.Id.ToString();
@@ -405,6 +416,7 @@ namespace ProxyManager
             public const string NewInstance = "newinstance";
             public const string ParentProcId = "parentid:";
             public const string NoAutorun = "noautorun";
+            public const string RunInSelf = "singleprocess";
         }
     }
 }
