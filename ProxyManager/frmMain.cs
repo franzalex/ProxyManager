@@ -97,11 +97,9 @@ namespace ProxyManager
         {
             // apply new configuration only if it is different from current one
             if (!setting.Equals(ConnectionSettings.GetCurrentConfig()))
-            {
                 ConnectionSettings.SetConfig(setting);
-                CurrentConnectionSetting = ConnectionSettings.GetCurrentConfig();
-            }
 
+            CurrentConnectionSetting = ConnectionSettings.GetCurrentConfig();
             SettingsApplied = DateTime.Now;
             ShowConnectionSettingBalloon();
         }
