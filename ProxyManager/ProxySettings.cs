@@ -54,7 +54,7 @@ namespace ProxyManager
             _ftp = ftpProxy != null ? ftpProxy : ProxyAddress.Default;
             _socks = socksProxy != null ? socksProxy : ProxyAddress.Default;
             _exceptions = new List<string>(exceptions);
-            _exceptions.RemoveAll((s) => s.IsNullOrBlank()); // remove blanks
+            _exceptions.RemoveAll((s) => s.IsNullOrEmpty()); // remove blanks
             BypassForLocal = _exceptions.Remove(Local);      // set the local bypass
         }
 
@@ -111,7 +111,7 @@ namespace ProxyManager
 
                 // copy non-blank addresses to the result
                 foreach (var ex in _exceptions)
-                    if (!ex.IsNullOrBlank())
+                    if (!ex.IsNullOrEmpty())
                         result.Add(ex.Trim());
 
                 if (BypassForLocal) result.Add(Local);
@@ -238,7 +238,7 @@ namespace ProxyManager
         private void OnSerializing(System.Runtime.Serialization.StreamingContext c)
         {
             serializing = true;
-            _exceptions.RemoveAll((s) => s.IsNullOrBlank());
+            _exceptions.RemoveAll((s) => s.IsNullOrEmpty());
 
             if (!_http.HasAddress) _http = null;
             if (!_https.HasAddress) _https = null;

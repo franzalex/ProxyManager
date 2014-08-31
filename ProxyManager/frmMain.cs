@@ -327,7 +327,7 @@ namespace ProxyManager
             tmrBalloon.Stop();
             // ensure we have at least two lines of text.
             // split lines, skip first line check if there are any more lines
-            text = text.Split('\r', '\n').Where(s => !s.IsNullOrBlank()).Skip(1).Any() ? text : "\r\n " + text;
+            text = text.Split('\r', '\n').Where(s => !s.IsNullOrEmpty()).Skip(1).Any() ? text : "\r\n " + text;
             tmrBalloon.Tag = string.Join("|", new[] { duration.ToString(), title, text, ((int)icon).ToString() });
             tmrBalloon.Interval = Math.Max(1, delay);
             tmrBalloon.Start();

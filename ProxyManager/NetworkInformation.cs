@@ -130,7 +130,7 @@ namespace ProxyManager
         {
             var l = new List<string>();
             l.Add(NetworkInterface.Name);
-            if (!NetworkInterface.MacAddress.IsNullOrBlank())
+            if (!NetworkInterface.MacAddress.IsNullOrEmpty())
                 l.Add("MAC: " + NetworkInterface.MacAddress);
 
             l.Add("IP: " + IPv4Address.ToString());
