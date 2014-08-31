@@ -95,11 +95,14 @@ namespace ProxyManager
         /// <param name="setting">The setting.</param>
         private void ApplyNetworkSetting(ConnectionSettings setting)
         {
-            ConnectionSettings.SetConfig(setting);
-            SettingsApplied = DateTime.Now;
-            CurrentConnectionSetting = ConnectionSettings.GetCurrentConfig();
+            // apply new configuration only if it is different from current one
+            if (!setting.Equals(ConnectionSettings.GetCurrentConfig()))
+            {
+                ConnectionSettings.SetConfig(setting);
+                CurrentConnectionSetting = ConnectionSettings.GetCurrentConfig();
+            }
 
-            // ShowBalloonTipDelayed(2500, "Connection Settings Changed", setting.ToString(), ToolTipIcon.Info);
+            SettingsApplied = DateTime.Now;
             ShowConnectionSettingBalloon();
         }
 
