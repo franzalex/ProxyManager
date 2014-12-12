@@ -129,10 +129,10 @@ namespace ProxyManager
             // proxy overrides
             var overrides = reg.GetValue("ProxyOverride", "").As<string>().Split(sep, rmvEmpty);
 
-            // proxy servers
-            ProxyAddress http = null, https = null, ftp = null, socks = null;
+            // proxy servers; initialize them all to default
+            ProxyAddress http = ProxyAddress.Default, https = http, ftp = http, socks = http;
             var proxies = reg.GetValue("ProxyServer", "").As<string>().ToLower().Split(sep, rmvEmpty);
-            if (proxies.Length == 1)
+            if (proxies.Length == 1 && !proxies[0].Contains("=")) // single HTTP proxy won't have an equal sign
                 http = new ProxyAddress(proxies[0]);
             else
                 foreach (var proxy in proxies)

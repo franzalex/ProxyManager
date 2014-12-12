@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace ProxyManager
 {
@@ -192,7 +193,9 @@ namespace ProxyManager
                 return Http != null && Http.HasAddress ? Http.ToString() : "";
             else
             {
-                if (!allAddresses)
+                if (!allAddresses && (from address in new[] { _http, _https, _ftp, _socks }
+                                      where address != null && address.HasAddress
+                                      select address).Count() > 1)
                     return "<multiple>";
 
                 var l = new List<string>();
