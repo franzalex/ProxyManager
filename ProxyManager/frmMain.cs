@@ -339,6 +339,7 @@ namespace ProxyManager
             var c = CurrentConnectionSetting;
             var tniNames = string.Join("\r\n",
                 transmittingInterfaces.Select(ti => "\t\t" + ti.NetworkInterface.Name).ToArray());
+
             var msgLn1 = "Connected On:\t" + (tniNames.Any() ? tniNames.TrimStart() : "Disconnected");
             var msgLn2 = "Current Setting:\t" + c.ToString();
 

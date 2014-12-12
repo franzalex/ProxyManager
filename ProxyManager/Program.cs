@@ -343,7 +343,7 @@ namespace ProxyManager
                     _childProc.WaitForExit();
 
                     System.Threading.Thread.Sleep(1000);
-                } while (_childProc.ExitCode != 0);
+                } while (_childProc.ExitCode != 0); //TODO: Terminate app after X number of failures
 
                 return; // terminate program execution
             }

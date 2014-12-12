@@ -57,7 +57,7 @@ namespace ProxyManager
             var skips = new[] { NetworkInterfaceType.Loopback, NetworkInterfaceType.Tunnel };
             var ti = new System.Collections.Generic.List<NetworkInterface>();
 
-            // TODO: Invvestigate if wrapping GetTransmittingInterfaces still throws an uncaught exception.
+            // TODO: Investigate if wrapping GetTransmittingInterfaces still throws an uncaught exception.
             try
             {
                 foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
