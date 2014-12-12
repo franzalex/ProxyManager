@@ -5,11 +5,11 @@ SETLOCAL ENABLEDELAYEDEXPANSION
 if not defined ProgramFiles(x86). (
   echo 32-bit OS detected
   :: set ttPath=%CommonProgramFiles%\Microsoft Shared\TextTemplating\1.2\
-  set ttPath=%CommonProgramFiles%\Microsoft Shared\TextTemplating\12.0\
+  set ttPath=%CommonProgramFiles%\Microsoft Shared\TextTemplating\11.0\
 ) else (
   echo 64-bit OS detected
   :: set ttPath=%CommonProgramFiles(x86)%\Microsoft Shared\TextTemplating\1.2\
-  set ttPath=%CommonProgramFiles(x86)%\Microsoft Shared\TextTemplating\12.0\
+  set ttPath=%CommonProgramFiles(x86)%\Microsoft Shared\TextTemplating\11.0\
 )
 
 :: set the working dir (default to current dir)
