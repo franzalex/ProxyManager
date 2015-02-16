@@ -170,6 +170,11 @@ namespace ProxyManager
         /// <returns><c>true</c> if settings are applied successfully; otherwise <c>false</c>.</returns>
         public static bool SetConfig(ConnectionSettings config)
         {
+            // bypass registry and use WinAPI if connection type is No Proxy
+            if (config.ConnectionType == ConnectionType.NoProxy)
+                return SetConfigWinApi(config);
+
+
             // main registry key
             var reg = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(keyName, true);
 
