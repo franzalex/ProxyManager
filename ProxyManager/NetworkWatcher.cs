@@ -10,19 +10,19 @@ namespace ProxyManager
     /// <summary>Provides data for the <seealso cref="NetworkAddressChanged"/> event.</summary>
     internal class NetworkAddressChangedEventArgs : EventArgs
     {
-        private NetworkInformation _ni;
+        private NetworkConnectionInfo _ni;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NetworkAddressChangedEventArgs" /> class.
         /// </summary>
         /// <param name="networkInfo">The network information.</param>
-        public NetworkAddressChangedEventArgs(NetworkInformation networkInfo)
+        public NetworkAddressChangedEventArgs(NetworkConnectionInfo networkInfo)
         {
             _ni = networkInfo;
         }
 
         /// <summary>Gets the network information.</summary>
-        public NetworkInformation NetworkInfo { get { return _ni; } }
+        public NetworkConnectionInfo NetworkInfo { get { return _ni; } }
     }
 
     /// <summary>Provides data for the <seealso cref="NetworkConnect"/> event.</summary>
@@ -97,7 +97,7 @@ namespace ProxyManager
             {
                 nicState[nic.Id] = nic.OperationalStatus;
                 if (nic.OperationalStatus == OperationalStatus.Up)
-                    nicAddress[nic.Id] = (new NetworkInformation(nic)).IPv4Address;
+                    nicAddress[nic.Id] = (new NetworkConnectionInfo(nic)).IPv4Address;
                 else
                     nicAddress[nic.Id] = System.Net.IPAddress.None;
             }
@@ -126,7 +126,7 @@ namespace ProxyManager
                 if (loopbacks.Contains(nic.NetworkInterfaceType))
                     continue;
 
-                var ntwkInfo = new NetworkInformation(nic);
+                var ntwkInfo = new NetworkConnectionInfo(nic);
 
                 if (nicState[nic.Id] == OperationalStatus.Up &&
                     nic.OperationalStatus == OperationalStatus.Down) // disconnect = Up -> Down

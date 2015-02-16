@@ -10,8 +10,8 @@ using NetworkInterface = System.Net.NetworkInformation.NetworkInterface;
 namespace ProxyManager
 {
     [Serializable()]
-    [Newtonsoft.Json.JsonConverter(typeof(NetworkInformation.JsonConverter))]
-    internal partial class NetworkInformation
+    [Newtonsoft.Json.JsonConverter(typeof(NetworkConnectionInfo.JsonConverter))]
+    internal partial class NetworkConnectionInfo
     {
         private bool _autoAssignedAddress;
         private string _dnsSuffix;
@@ -20,7 +20,7 @@ namespace ProxyManager
         private Dictionary<string, IPAddress[]> ntwkInfo;
 
 
-        public NetworkInformation(NetworkInterface ntwkInterface)
+        public NetworkConnectionInfo(NetworkInterface ntwkInterface)
         {
             try
             {
@@ -97,9 +97,9 @@ namespace ProxyManager
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (obj == null || obj.GetType() != typeof(NetworkInformation)) return false;
+            if (obj == null || obj.GetType() != typeof(NetworkConnectionInfo)) return false;
 
-            var n = ((NetworkInformation)obj);
+            var n = ((NetworkConnectionInfo)obj);
             var result = n.NetworkInterface.Equals(NetworkInterface);
 
             foreach (var key in PropertyNames.GetIPAddressPropertyNames())
@@ -187,7 +187,7 @@ namespace ProxyManager
             [System.Diagnostics.DebuggerStepThrough()]
             static PropertyNames()
             {
-                var n = new NetworkInformation(null);
+                var n = new NetworkConnectionInfo(null);
                 AutoAssignedIP = GetPropertyName(() => n.AutoAssignedIPAddress);
                 DefaultGateway = GetPropertyName(() => n.DefaultGateway);
                 DhcpServer = GetPropertyName(() => n.DhcpServer);

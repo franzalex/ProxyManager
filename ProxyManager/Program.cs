@@ -142,7 +142,7 @@ namespace ProxyManager
             {
                 var jset = new JsonSerializerSettings();
                 jset.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
-                jset.Converters.Add(new NetworkInformation.JsonConverter());
+                jset.Converters.Add(new NetworkConnectionInfo.JsonConverter());
 
                 var fileText = System.IO.File.ReadAllText(settingsFile);
                 var savedSettings = JsonConvert.DeserializeObject<List<NetworkSettings>>(fileText);
@@ -163,7 +163,7 @@ namespace ProxyManager
 
             var jset = new JsonSerializerSettings();
             jset.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
-            jset.Converters.Add(new NetworkInformation.JsonConverter());
+            jset.Converters.Add(new NetworkConnectionInfo.JsonConverter());
 
             var fileText = JsonConvert.SerializeObject(_networkSettings, Formatting.Indented, jset);
 

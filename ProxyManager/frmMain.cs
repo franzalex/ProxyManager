@@ -20,7 +20,7 @@ namespace ProxyManager
         #endregion NetworkMatch
 
         private bool CurrentConnectionIsKnown;
-        private IEnumerable<NetworkInformation> transmittingInterfaces;
+        private IEnumerable<NetworkConnectionInfo> transmittingInterfaces;
         private ConnectionSettings CurrentConnectionSetting;
         private DateTime SettingsApplied;
         private Timer tmrBalloon;
@@ -41,7 +41,7 @@ namespace ProxyManager
             Program.NetworkWatcher.NetworkDisconnect += NetworkWatcher_NetworkEvent;
             Program.NetworkWatcher.NetworkAddressChanged += NetworkWatcher_NetworkEvent;
 
-            transmittingInterfaces = Enumerable.Empty<NetworkInformation>();
+            transmittingInterfaces = Enumerable.Empty<NetworkConnectionInfo>();
 
             // LOW: render Windows 7 style tray window (e.g. volume control & action center)
         }
@@ -50,7 +50,7 @@ namespace ProxyManager
 
         /// <summary>Finds the networks that match the specified network information.</summary>
         /// <returns></returns>
-        private static IEnumerable<NetworkMatch> FindNetworkMatches(IEnumerable<NetworkInformation> ni,
+        private static IEnumerable<NetworkMatch> FindNetworkMatches(IEnumerable<NetworkConnectionInfo> ni,
                                                                     double minMatchScore)
         {
             var yields = new HashSet<ConnectionSettings>();
@@ -70,7 +70,7 @@ namespace ProxyManager
         /// <param name="connSetting">The connection setting.</param>
         /// <param name="netInfo">The network information associated with the connection setting.</param>
         private static void SaveConfiguration(ConnectionSettings connSetting,
-                                              IEnumerable<NetworkInformation> netInfo)
+                                              IEnumerable<NetworkConnectionInfo> netInfo)
         {
             var netConfig = Program.NetworkSettings.Select((s, i) => new {
                 Setting = s,
@@ -251,7 +251,7 @@ namespace ProxyManager
 
             // update proxy dropdown items and apply default on all network events
             var ni = NetworkInterfaceInternal.GetTransmittingInterfaces()
-                                             .Select(n => new NetworkInformation(n))
+                                             .Select(n => new NetworkConnectionInfo(n))
                                              .Where(i => i.InitializedSuccessfully)
                                              .ToArray();
 

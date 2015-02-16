@@ -7,14 +7,14 @@ namespace ProxyManager
     [Serializable()]
     internal class NetworkSettings
     {
-        private List<NetworkInformation> _networks;
+        private List<NetworkConnectionInfo> _networks;
 
         public NetworkSettings()
         {
-            _networks = new List<NetworkInformation>();
+            _networks = new List<NetworkConnectionInfo>();
         }
 
-        public NetworkSettings(IEnumerable<NetworkInformation> netwkInfo, ConnectionSettings configuration)
+        public NetworkSettings(IEnumerable<NetworkConnectionInfo> netwkInfo, ConnectionSettings configuration)
             : this()
         {
             this.Networks.AddRange(netwkInfo);
@@ -23,9 +23,9 @@ namespace ProxyManager
 
         public ConnectionSettings Configuration { get; set; }
 
-        public List<NetworkInformation> Networks { get { return _networks; } }
+        public List<NetworkConnectionInfo> Networks { get { return _networks; } }
 
-        internal double NetworkMatchScore(IEnumerable<NetworkInformation> matchNetworks)
+        internal double NetworkMatchScore(IEnumerable<NetworkConnectionInfo> matchNetworks)
         {
             var scores = new List<double>();
 

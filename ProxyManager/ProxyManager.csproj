@@ -75,7 +75,7 @@
     </Compile>
     <Compile Include="JsonConverters\NetworkInterfaceConverter.cs" />
     <Compile Include="JsonConverters\NetworkInformationConverter.cs" />
-    <Compile Include="NetworkInformation.cs" />
+    <Compile Include="NetworkConnectionInfo.cs" />
     <Compile Include="NetworkInterfaceInternal.cs" />
     <Compile Include="NetworkSettings.cs" />
     <Compile Include="NetworkWatcher.cs" />

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ProxyManager
 {
-    internal partial class NetworkInformation
+    internal partial class NetworkConnectionInfo
     {
         public class JsonConverter : Newtonsoft.Json.JsonConverter
         {
@@ -15,7 +15,7 @@ namespace ProxyManager
 
             public override bool CanConvert(Type objectType)
             {
-                return objectType == typeof(NetworkInformation);
+                return objectType == typeof(NetworkConnectionInfo);
             }
 
             /// <summary>Reads the JSON representation of the object.</summary>
@@ -27,7 +27,7 @@ namespace ProxyManager
             public override object ReadJson(JsonReader reader, Type objectType,
                                             object existingValue, JsonSerializer serializer)
             {
-                var ni = new NetworkInformation(null);
+                var ni = new NetworkConnectionInfo(null);
 
                 while (reader.Read())
                 {
@@ -72,7 +72,7 @@ namespace ProxyManager
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
                 writer.WriteStartObject();
-                var ni = (NetworkInformation)value;
+                var ni = (NetworkConnectionInfo)value;
 
                 // add a json converter for NetworkInterfaceInternal if none present
                 if (!serializer.Converters.Where(c => c.CanConvert(typeof(NetworkInterfaceInternal))).Any())
