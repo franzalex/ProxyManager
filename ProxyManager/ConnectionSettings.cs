@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using Marshal = System.Runtime.InteropServices.Marshal;
 
 namespace ProxyManager
 {
@@ -18,8 +19,19 @@ namespace ProxyManager
     {
         #region P/Invoke
 
+        private const int INTERNET_OPEN_NO_PROXY = 1;
+        private const int INTERNET_OPEN_TYPE_PROXY = 3;
+
         private const int INTERNET_OPTION_REFRESH = 37;
+        private const int INTERNET_OPTION_PROXY = 38;
         private const int INTERNET_OPTION_SETTINGS_CHANGED = 39;
+
+        struct INTERNET_PROXY_INFO
+        {
+            public int dwAccessType;
+            public IntPtr proxy;
+            public IntPtr proxyBypass;
+        };
 
         [System.Runtime.InteropServices.DllImport("wininet.dll")]
         private static extern bool InternetSetOption(IntPtr hInternet, int dwOption, IntPtr lpBuffer, int dwBufferLength);
@@ -153,7 +165,7 @@ namespace ProxyManager
             return nc;
         }
 
-        /// <summary>Sets the network configuration.</summary>
+        /// <summary>Sets the network configuration via the Windows registry.</summary>
         /// <param name="config">The configuration to apply for the network.</param>
         /// <returns><c>true</c> if settings are applied successfully; otherwise <c>false</c>.</returns>
         public static bool SetConfig(ConnectionSettings config)
@@ -194,6 +206,50 @@ namespace ProxyManager
             bool result;
             result = InternetSetOption(IntPtr.Zero, INTERNET_OPTION_SETTINGS_CHANGED, IntPtr.Zero, 0);
             result &= InternetSetOption(IntPtr.Zero, INTERNET_OPTION_REFRESH, IntPtr.Zero, 0);
+
+            return result;
+        }
+
+        /// <summary>Sets the network configuration using WinApi.</summary>
+        /// <param name="config">The configuration to apply for the network.</param>
+        /// <returns><c>true</c> if settings are applied successfully; otherwise <c>false</c>.</returns>
+        public static bool SetConfigWinApi(ConnectionSettings config)
+        {
+            // adapted from http://pinvoke.net/default.aspx/wininet.InternetSetOption
+
+            var proxyInfo = new INTERNET_PROXY_INFO();
+
+            // Fill in the structure
+            if (config.ConnectionType == ConnectionType.NoProxy)
+            {
+                proxyInfo.dwAccessType = INTERNET_OPEN_NO_PROXY;
+            }
+            else if (config.ConnectionType == ConnectionType.ManualProxy)
+            {
+                var proxy = config.ManualProxy;
+                proxyInfo.dwAccessType = INTERNET_OPEN_TYPE_PROXY;
+                proxyInfo.proxy = Marshal.StringToHGlobalAnsi(proxy.ToString(true));
+                proxyInfo.proxyBypass = Marshal.StringToHGlobalAnsi(proxy.ProxyOverrides);
+            }
+            else
+            {
+                // Send AutoConfigUrl and AutoDetect calls to the registry version
+                return SetConfig(config);
+            }
+
+            // Allocating memory
+            IntPtr intptrStruct = Marshal.AllocCoTaskMem(Marshal.SizeOf(proxyInfo));
+
+            // Convert structure to IntPtr
+            Marshal.StructureToPtr(proxyInfo, intptrStruct, true);
+
+            // apply the configuration
+            bool result;
+            result = InternetSetOption(IntPtr.Zero, INTERNET_OPTION_PROXY,
+                                       intptrStruct, Marshal.SizeOf(proxyInfo));
+
+            //result &= InternetSetOption(IntPtr.Zero, INTERNET_OPTION_SETTINGS_CHANGED, IntPtr.Zero, 0);
+            //result &= InternetSetOption(IntPtr.Zero, INTERNET_OPTION_REFRESH, IntPtr.Zero, 0);
 
             return result;
         }
