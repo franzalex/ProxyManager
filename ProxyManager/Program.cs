@@ -13,6 +13,7 @@ namespace ProxyManager
     {
         // TODO: Use a FileSystemWatcher to monitor changes to the network settings file and reload as needed.
 
+        private static string[] _appArgs;
         private static string _appDataPath;
         private static string _appPath;
         private static Process _childProc;
@@ -21,7 +22,7 @@ namespace ProxyManager
         private static ObservableCollection<NetworkSettings> _networkSettings;
         private static Process _parentProc;
         private static RegistryUtils.RegistryMonitor _regWatcher;
-        private static string[] _appArgs;
+        private static List<DateTime> childExitTimes;
         private static bool debuggerAttached;
 
 
@@ -35,6 +36,12 @@ namespace ProxyManager
         public static string AppPath
         {
             get { return Program._appPath; }
+        }
+
+        /// <summary>Gets the start arguments.</summary>
+        public static string[] Arguments
+        {
+            get { return _appArgs; }
         }
 
         /// <summary>Gets or sets a value indicating whether the program starts automatically.</summary>
@@ -85,12 +92,6 @@ namespace ProxyManager
         public static RegistryUtils.RegistryMonitor RegistryWatcher
         {
             get { return Program._regWatcher; }
-        }
-
-        /// <summary>Gets the start arguments.</summary>
-        public static string[] Arguments
-        {
-            get { return _appArgs; }
         }
 
         /// <summary>Gets the program version.</summary>
@@ -221,6 +222,23 @@ namespace ProxyManager
             }
         }
 
+        /// <summary>Determines if child process can be started.</summary>
+        /// <returns><c>true</c> if child process can be started; otherwise <c>false</c>.</returns>
+        private static bool CanStartChildProcess()
+        {
+            /*
+             * start a child process if any of these conditions are valid
+             *   1. This instance is not a child process
+             *   2. There is no debugger attached to this instance
+             *   3. Program start arguments does not contain SingleInstance
+             *   4. Parent process exited before this child could be started
+             */
+            return !IsChildProcess ||
+                   !debuggerAttached ||
+                   !Program.Arguments.Contains(ValidArgs.RunInSelf) ||
+                   (ParentProcess != null && ParentProcess.HasExited);
+        }
+
         /// <summary>Determines whether this instance this instance can be started.</summary>
         /// <returns><c>true</c> if this instance can be started; otherwise <c>false</c>.</returns>
         private static bool CanStartThisInstance()
@@ -327,13 +345,12 @@ namespace ProxyManager
             /*  Start child process in the following conditions
              *    1. This is not a child process
              *    2. There is no debugger attached
-             *    3. The singleprocess argument was not passed
+             *    3. The singleProcess argument was not passed
              *    4. Parent process exited before this one is completely initialized
              */
-            if (!(IsChildProcess || debuggerAttached ||
-                  Program.Arguments.Contains(ValidArgs.RunInSelf)) ||
-                (ParentProcess != null && ParentProcess.HasExited))
+            if (CanStartChildProcess())
             {
+                childExitTimes = new List<DateTime>();
                 // recursively start new child processes if exit code is not 0 (successful exit)
                 do
                 {
@@ -343,7 +360,7 @@ namespace ProxyManager
                     _childProc.WaitForExit();
 
                     System.Threading.Thread.Sleep(1000);
-                } while (_childProc.ExitCode != 0); //TODO: Terminate app after X number of failures
+                } while (ShouldRestartChildProc(_childProc.ExitCode));
 
                 return; // terminate program execution
             }
@@ -409,13 +426,39 @@ namespace ProxyManager
             }
         }
 
+        /// <summary>Determines if the child process should be restarted.</summary>
+        /// <param name="exitCode">The exit code of the child process.</param>
+        /// <returns>
+        ///   <c>true</c> if the child process should be restarted; otherwise <c>false</c>.
+        /// </returns>
+        private static bool ShouldRestartChildProc(int exitCode)
+        {
+            if (exitCode == 0) return false; // don't restart on clean exit
 
+            // add exit time to list and clear those older than 2 minutes
+            var now = DateTime.Now;
+            var maxMins = 2;
+            childExitTimes.Add(now);
+            childExitTimes.RemoveAll(d => now.Subtract(d).TotalMinutes > maxMins);
 
+            var msgText = "{0} has restarted {1} times in the past {2} minutes.\r\n" +
+                          "Do you want to continue running it?";
+
+            // allow restart if less than three exits in the past two minutes or 
+            // the user wants the program to be restarted
+            if (childExitTimes.Count < 3 ||
+                MessageBox.Show(string.Format(msgText, Program.Name, childExitTimes.Count, maxMins),
+                                Program.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
+                                MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                return true;
+            else
+                return false;
+        }
         internal static class ValidArgs
         {
             public const string NewInstance = "newinstance";
-            public const string ParentProcId = "parentid:";
             public const string NoAutorun = "noautorun";
+            public const string ParentProcId = "parentid:";
             public const string RunInSelf = "singleprocess";
         }
     }
