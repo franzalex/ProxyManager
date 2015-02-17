@@ -224,32 +224,8 @@ namespace ProxyManager
                 return;
             }
 
-            //var eType = e.GetType();
-            //if (eType == typeof(NetworkDisconnectEventArgs))
-            //{
-            //    var ne = e.As<NetworkDisconnectEventArgs>();
-            //    //ShowBalloonTipDelayed(2500, Program.Name, "Disconnected from " + ne.NetworkInterface.Name,
-            //    //                      ToolTipIcon.Info);
-            //}
-            //else if (eType == typeof(NetworkConnectEventArgs))
-            //{
-            //    var ne = e.As<NetworkConnectEventArgs>();
-            //    //ShowBalloonTipDelayed(2500, Program.Name, "Connected to " + ne.NetworkInterface.Name,
-            //    //                      ToolTipIcon.Info);
-            //}
-            //else if (eType == typeof(NetworkAddressChangedEventArgs))
-            //{
-            //    var ne = e.As<NetworkAddressChangedEventArgs>();
-            //    //if (ne.NetworkInfo.NetworkInterface.Status != System.Net.NetworkInformation.OperationalStatus.Up)
-            //    //    return;
 
-            //    //ShowBalloonTipDelayed(2500, Program.Name, string.Format("IP Address on {0}\r\nchanged to ",
-            //    //                      ne.NetworkInfo.NetworkInterface.Name,
-            //    //                      ne.NetworkInfo.IPv4Address),
-            //    //                      ToolTipIcon.Info);
-            //}
-
-            // update proxy dropdown items and apply default on all network events
+            // update proxy drop down items and apply default on all network events
             var ni = NetworkInterfaceInternal.GetTransmittingInterfaces()
                                              .Select(n => new NetworkConnectionInfo(n))
                                              .Where(i => i.InitializedSuccessfully)
