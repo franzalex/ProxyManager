@@ -186,6 +186,24 @@ namespace ProxyManager
             UpdateProxyDropDownItems();
         }
 
+
+        /// <summary>Executes the specified action after a delay.</summary>
+        /// <param name="ms">The number of milliseconds to wait before executing the action.</param>
+        /// <param name="action">The action to be executed after the delay.</param>
+        static void DelayedExecute(int ms, Action action)
+        {
+            var tmr = new Timer { Interval = ms };  // initialize the temporary timer
+
+            // add event handler to invoke the method after the delay
+            tmr.Tick += new EventHandler((o, e) => {
+                tmr.Stop();
+                action.Invoke();
+                tmr.Dispose();
+            });
+
+            tmr.Start();    // start the timer
+        }
+
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing)
@@ -225,21 +243,23 @@ namespace ProxyManager
             }
 
 
-            // update proxy drop down items and apply default on all network events
-            var ni = NetworkInterfaceInternal.GetTransmittingInterfaces()
-                                             .Select(n => new NetworkConnectionInfo(n))
-                                             .Where(i => i.InitializedSuccessfully)
-                                             .ToArray();
+            DelayedExecute(10000, () => {
+                // update proxy drop down items and apply default on all network events
+                var ni = NetworkInterfaceInternal.GetTransmittingInterfaces()
+                                                 .Select(n => new NetworkConnectionInfo(n))
+                                                 .Where(i => i.InitializedSuccessfully)
+                                                 .ToArray();
 
-            // check if the elements in the two sets are different before applying setting
-            // prevents unnecessary updates to settings and hence balloon pop ups.
-            if (!ni.ElementsAreSame(transmittingInterfaces))
-            {
-                transmittingInterfaces = ni;
-                var matches = FindNetworkMatches(ni, 0.5);
-                if (matches.Any())
-                    ApplyNetworkSetting(matches.First().NetworkSetting.Configuration);
-            }
+                // check if the elements in the two sets are different before applying setting
+                // prevents unnecessary updates to settings and hence balloon pop ups.
+                if (!ni.ElementsAreSame(transmittingInterfaces))
+                {
+                    transmittingInterfaces = ni;
+                    var matches = FindNetworkMatches(ni, 0.5);
+                    if (matches.Any())
+                        ApplyNetworkSetting(matches.First().NetworkSetting.Configuration);
+                }
+            });
         }
 
         private void notifyIcon_BalloonTipClicked(object sender, EventArgs e)
