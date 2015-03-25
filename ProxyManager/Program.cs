@@ -228,14 +228,14 @@ namespace ProxyManager
         {
             /*
              * start a child process if any of these conditions are valid
-             *   1. This instance is not a child process
-             *   2. There is no debugger attached to this instance
+             *   1. There is no debugger attached to this instance
+             *   2. This instance is not a child process
              *   3. Program start arguments does not contain SingleInstance
              *   4. Parent process exited before this child could be started
              */
-            return !IsChildProcess ||
-                   !debuggerAttached ||
-                   !Program.Arguments.Contains(ValidArgs.RunInSelf) ||
+            return !debuggerAttached ||
+                   (!debuggerAttached &&
+                   (!Program.Arguments.Contains(ValidArgs.RunInSelf) || IsChildProcess)) ||
                    (ParentProcess != null && ParentProcess.HasExited);
         }
 
