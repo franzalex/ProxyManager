@@ -83,6 +83,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProxyAddress.cs" />
     <Compile Include="ConnectionSettings.cs" />
+    <Compile Include="ProxyRoutines.cs" />
     <Compile Include="ProxySettings.cs" />
     <Compile Include="RegistryMonitor.cs" />
     <Compile Include="Tuple.cs" />
@@ -123,6 +124,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ProxyManager.csproj.vsspell" />
     <None Include="Resources\delete.png" />
   </ItemGroup>
   <ItemGroup>

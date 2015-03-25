@@ -220,43 +220,20 @@ namespace ProxyManager
         /// <returns><c>true</c> if settings are applied successfully; otherwise <c>false</c>.</returns>
         public static bool SetConfigWinApi(ConnectionSettings config)
         {
-            // adapted from http://pinvoke.net/default.aspx/wininet.InternetSetOption
+            var proxy = config.ManualProxy;
 
-            var proxyInfo = new INTERNET_PROXY_INFO();
+            return SetProxy.ProxyRoutines.SetProxy(config.ConnectionType != ConnectionType.NoProxy,
+                                                   config.ConnectionType == ConnectionType.AutoDetect,
+                                                   proxy.ToString(true),
+                                                   proxy.BypassList.Count > 0 ? proxy.ProxyOverrides : "",
+                                                   config.AutoConfigUrl);
 
-            // Fill in the structure
-            if (config.ConnectionType == ConnectionType.NoProxy)
-            {
-                proxyInfo.dwAccessType = INTERNET_OPEN_NO_PROXY;
-            }
-            else if (config.ConnectionType == ConnectionType.ManualProxy)
-            {
-                var proxy = config.ManualProxy;
-                proxyInfo.dwAccessType = INTERNET_OPEN_TYPE_PROXY;
-                proxyInfo.proxy = Marshal.StringToHGlobalAnsi(proxy.ToString(true));
-                proxyInfo.proxyBypass = Marshal.StringToHGlobalAnsi(proxy.ProxyOverrides);
-            }
-            else
-            {
-                // Send AutoConfigUrl and AutoDetect calls to the registry version
-                return SetConfig(config);
-            }
-
-            // Allocating memory
-            IntPtr intptrStruct = Marshal.AllocCoTaskMem(Marshal.SizeOf(proxyInfo));
-
-            // Convert structure to IntPtr
-            Marshal.StructureToPtr(proxyInfo, intptrStruct, true);
-
-            // apply the configuration
-            bool result;
-            result = InternetSetOption(IntPtr.Zero, INTERNET_OPTION_PROXY,
-                                       intptrStruct, Marshal.SizeOf(proxyInfo));
-
-            //result &= InternetSetOption(IntPtr.Zero, INTERNET_OPTION_SETTINGS_CHANGED, IntPtr.Zero, 0);
-            //result &= InternetSetOption(IntPtr.Zero, INTERNET_OPTION_REFRESH, IntPtr.Zero, 0);
-
-            return result;
+            /* //!+ Convert C++ implementation to C#
+             * See http://www.codeproject.com/Articles/3651/Change-Internet-Proxy-settings for a C++ 
+             * implementation and try ton convert to C#
+             * 
+             * The page has been downloaded and saved to the solution directory
+             */
         }
 
         /// <summary>
