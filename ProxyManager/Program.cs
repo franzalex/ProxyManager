@@ -233,9 +233,11 @@ namespace ProxyManager
              *   3. Program start arguments does not contain SingleInstance
              *   4. Parent process exited before this child could be started
              */
-            return !debuggerAttached ||
-                   (!debuggerAttached &&
-                   (!Program.Arguments.Contains(ValidArgs.RunInSelf) || IsChildProcess)) ||
+
+            if (debuggerAttached || IsChildProcess)
+                return false;
+
+            return !Program.Arguments.Contains(ValidArgs.RunInSelf) ||
                    (ParentProcess != null && ParentProcess.HasExited);
         }
 
