@@ -189,15 +189,15 @@ namespace ProxyManager
 
         /// <summary>Executes the specified action after a delay.</summary>
         /// <param name="ms">The number of milliseconds to wait before executing the action.</param>
-        /// <param name="action">The action to be executed after the delay.</param>
-        static void DelayedExecute(int ms, Action action)
+        /// <param name="method">The method to be executed after the delay.</param>
+        static void DelayedExecute(int ms, Action method)
         {
             var tmr = new Timer { Interval = ms };  // initialize the temporary timer
 
             // add event handler to invoke the method after the delay
             tmr.Tick += new EventHandler((o, e) => {
                 tmr.Stop();
-                action.Invoke();
+                method.Invoke();
                 tmr.Dispose();
             });
 
