@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -276,7 +276,7 @@ namespace ProxyManager
                     if (matches.Any())
                         ApplyNetworkSetting(matches.First().NetworkSetting.Configuration);
                 }
-            });
+            }, "UpdateProxy");
         }
 
         private void notifyIcon_BalloonTipClicked(object sender, EventArgs e)
