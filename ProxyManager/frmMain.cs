@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -24,6 +24,8 @@ namespace ProxyManager
         private ConnectionSettings CurrentConnectionSetting;
         private DateTime SettingsApplied;
         private Timer tmrBalloon;
+
+        private static HashSet<Timer> DelayedExecutionTimers = new HashSet<Timer>();
 
         public frmMain()
         {
@@ -190,15 +192,30 @@ namespace ProxyManager
         /// <summary>Executes the specified action after a delay.</summary>
         /// <param name="ms">The number of milliseconds to wait before executing the action.</param>
         /// <param name="method">The method to be executed after the delay.</param>
-        static void DelayedExecute(int ms, Action method)
+        static void DelayedExecute(int ms, Action method, string ID = null)
         {
-            var tmr = new Timer { Interval = ms };  // initialize the temporary timer
+            // remove duplicate timer from the collection
+            foreach (var dup in DelayedExecutionTimers.Where(t => t.Tag.ToString() == ID).ToArray())
+            {
+                dup.Stop();
+                DelayedExecutionTimers.Remove(dup);
+                dup.Dispose();
+            }
+
+            // initialize new temporary timer
+            var tmr = new Timer {
+                Interval = ms,
+                Tag = !ID.IsNullOrEmpty() ? ID : DateTime.UtcNow.Ticks.ToString()
+            };
+            DelayedExecutionTimers.Add(tmr);
 
             // add event handler to invoke the method after the delay
             tmr.Tick += new EventHandler((o, e) => {
-                tmr.Stop();
+                var t = (Timer)o;
+                t.Stop();
                 method.Invoke();
-                tmr.Dispose();
+                DelayedExecutionTimers.Remove(t);
+                t.Dispose();
             });
 
             tmr.Start();    // start the timer
