@@ -185,7 +185,6 @@ namespace ProxyManager
         private void ctxNotification_Opening(object sender, CancelEventArgs e)
         {
             cmnuNotifAutoStart.Checked = Program.AutoStart;
-            UpdateProxyDropDownItems();
         }
 
 
@@ -275,6 +274,8 @@ namespace ProxyManager
                     var matches = FindNetworkMatches(ni, 0.5);
                     if (matches.Any())
                         ApplyNetworkSetting(matches.First().NetworkSetting.Configuration);
+
+                    UpdateProxyDropDownItems();
                 }
             }, "UpdateProxy");
         }
