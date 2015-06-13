@@ -6,8 +6,8 @@
 
 using System.Reflection;
 
-[assembly: AssemblyVersion("0.9.<#= this.monthDay #>.<#= this.hourMin #>")]
-[assembly: AssemblyFileVersion("0.9.<#= this.monthDay #>.<#= this.hourMin #>")]
+[assembly: AssemblyVersion("0.10.<#= this.monthDay #>.<#= this.hourMin #>")]
+[assembly: AssemblyFileVersion("0.10.<#= this.monthDay #>.<#= this.hourMin #>")]
 <#+
 	// int RevisionNumber = (int)(DateTime.UtcNow - new DateTime(2010,1,1)).TotalDays;
 	int monthDay = int.Parse(DateTime.UtcNow.ToString("MMdd"));
