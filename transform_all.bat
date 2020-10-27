@@ -2,14 +2,12 @@
 SETLOCAL ENABLEDELAYEDEXPANSION
 
 :: set the correct path to the the app
-if not defined ProgramFiles(x86). (
+if not defined ProgramFiles(x86) (
   echo 32-bit OS detected
-  :: set ttPath=%CommonProgramFiles%\Microsoft Shared\TextTemplating\1.2\
-  set ttPath=%CommonProgramFiles%\Microsoft Shared\TextTemplating\11.0\
+  ttPath="%ProgramFiles%\Microsoft Visual Studio\2017\Community\Common7\IDE\TextTransform.exe"
 ) else (
   echo 64-bit OS detected
-  :: set ttPath=%CommonProgramFiles(x86)%\Microsoft Shared\TextTemplating\1.2\
-  set ttPath=%CommonProgramFiles(x86)%\Microsoft Shared\TextTemplating\11.0\
+  set ttPath="%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\Common7\IDE\TextTransform.exe"
 )
 
 :: set the working dir (default to current dir)
@@ -35,7 +33,7 @@ for /f "delims=" %%d in (t4list.txt) do (
   set file_name=%%d
   set file_name=!file_name:~0,-3!.%ext%
   echo:  \--^> !!file_name:%cd%=%blank%!
-  "%ttPath%TextTransform.exe" -out "!file_name!" "%%d"
+  %ttPath% -out "!file_name!" "%%d"
 )
 
 :: delete T4 list and return to previous directory
