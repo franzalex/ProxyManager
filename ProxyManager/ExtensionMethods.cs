@@ -118,6 +118,21 @@ namespace ProxyManager
             return count == 0 && firstSet.Count == 0;
         }
 
+        /// <summary>Ensures the value is greater or equal to the specified minimum.</summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value">The value to be evaluated.</param>
+        /// <param name="min">The minimum value.</param>
+        /// <returns>
+        ///   <paramref name="value" /> if it is greater than <paramref name="min" />; else <paramref name="min" />.
+        /// </returns>
+        public static T EnsureMin<T>(this T value, T min) where T : IComparable
+        {
+            if (value.CompareTo(min) < 0)
+                return min;
+
+            return value;
+        }
+
         /// <summary>
         /// Determines whether the specified <see cref="System.String" /> instance is null or empty.
         /// </summary>

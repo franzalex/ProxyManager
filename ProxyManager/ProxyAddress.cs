@@ -34,13 +34,16 @@ namespace ProxyManager
         /// <param name="proxyAddress">The proxy address.</param>
         public ProxyAddress(string proxyAddress)
         {
-            var p = proxyAddress.Split(':');
-            _address = p[0].Trim();
+            var splitAt = proxyAddress.LastIndexOf(':');
+            _address = proxyAddress.Remove(splitAt.EnsureMin(0)); // startIndex < 0 throws an exception
 
-            if (!IsValidAddress(_address))
+            if (splitAt == -1 || !IsValidAddress(_address))
                 throw new ArgumentException("'" + _address + "' not a valid IP address or host name.");
 
-            this.Port = Convert.ToUInt16(p.Length >= 2 && !string.IsNullOrEmpty(p[1]) ? p[1] : "0");
+            if (UInt16.TryParse(proxyAddress.Substring(splitAt + 1), out var port))
+                this.Port = port;
+            else
+                this.Port = NoProxy.Port;
         }
 
         public static ProxyAddress Default
